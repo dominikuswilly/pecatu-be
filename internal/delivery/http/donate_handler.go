@@ -32,6 +32,16 @@ func (h *DonateHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var amountTotal float64
+	for _, d := range donateDetails {
+		amountTotal += d.Amount
+	}
+
+	data := map[string]interface{}{
+		"detail":       donateDetails,
+		"amount_total": amountTotal,
+	}
+
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(SuccessResponse(http.StatusOK, "Donate details retrieved successfully", donateDetails))
+	json.NewEncoder(w).Encode(SuccessResponse(http.StatusOK, "Donate details retrieved successfully", data))
 }

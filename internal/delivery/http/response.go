@@ -1,7 +1,9 @@
 package http
 
+import "fmt"
+
 type Response struct {
-	Code    int         `json:"code"`
+	Code    string      `json:"code"`
 	Status  string      `json:"status"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data,omitempty"`
@@ -9,7 +11,7 @@ type Response struct {
 
 func SuccessResponse(code int, message string, data interface{}) Response {
 	return Response{
-		Code:    code,
+		Code:    fmt.Sprintf("%d", code),
 		Status:  "success",
 		Message: message,
 		Data:    data,
@@ -18,7 +20,7 @@ func SuccessResponse(code int, message string, data interface{}) Response {
 
 func ErrorResponse(code int, message string) Response {
 	return Response{
-		Code:    code,
+		Code:    fmt.Sprintf("%d", code),
 		Status:  "error",
 		Message: message,
 	}
