@@ -1,17 +1,26 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
-type Donate struct {
-	ID     string  `json:"id"`
-	Amount float64 `json:"amount"`
-	Status string  `json:"status"`
+type DonateDetail struct {
+	ID        string    `json:"id"`
+	DonateID  string    `json:"donate_id"`
+	Cluster   *string   `json:"cluster"`
+	Block     *string   `json:"block"`
+	Number    *string   `json:"number"`
+	CreatedAt time.Time `json:"created_at"`
+	CreatedBy string    `json:"created_by"`
+	Amount    float64   `json:"amount"`
+	Name      string    `json:"name"`
 }
 
 type DonateRepository interface {
-	GetByID(ctx context.Context, id string) (*Donate, error)
+	GetByDonateID(ctx context.Context, donateID string) ([]*DonateDetail, error)
 }
 
 type DonateUsecase interface {
-	GetDonateByID(ctx context.Context, id string) (*Donate, error)
+	GetDonateDetailsByID(ctx context.Context, donateID string) ([]*DonateDetail, error)
 }

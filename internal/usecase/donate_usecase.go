@@ -15,6 +15,6 @@ func NewDonateUsecase(donateRepo domain.DonateRepository) domain.DonateUsecase {
 	}
 }
 
-func (u *donateUsecase) GetDonateByID(ctx context.Context, id string) (*domain.Donate, error) {
-	return u.donateRepo.GetByID(ctx, id)
+func (u *donateUsecase) GetDonateDetailsByID(ctx context.Context, donateID string) ([]*domain.DonateDetail, error) {
+	return u.donateRepo.GetByDonateID(ctx, donateID)
 }

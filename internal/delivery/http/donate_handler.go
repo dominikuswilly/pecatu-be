@@ -17,18 +17,21 @@ func NewDonateHandler(donateUsecase domain.DonateUsecase) *DonateHandler {
 }
 
 func (h *DonateHandler) GetByID(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	id := r.PathValue("id")
 	if id == "" {
-		http.Error(w, "missing id parameter", http.StatusBadRequest)
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(ErrorResponse(http.StatusBadRequest, "missing id parameter"))
 		return
 	}
 
-	donate, err := h.donateUsecase.GetDonateByID(r.Context(), id)
+	donateDetails, err := h.donateUsecase.GetDonateDetailsByID(r.Context(), id)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(ErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(donate)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(SuccessResponse(http.StatusOK, "Donate details retrieved successfully", donateDetails))
 }
