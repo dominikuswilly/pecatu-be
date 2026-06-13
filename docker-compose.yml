@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  api:
+    image: registry.bengkelfajarjaya.com/pecatu-be/stable:1.0.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "6201:6201"
+    env_file:
+      - .env
+    restart: unless-stopped

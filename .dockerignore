@@ -1,0 +1,25 @@
+# Environment variables
+.env
+.env.*
+
+# Git folder
+.git
+.gitignore
+
+# Go built binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+main
+
+# Markdown and Docs
+README.md
+
+# OS-specific
+.DS_Store
+Thumbs.db
+tmp_api
