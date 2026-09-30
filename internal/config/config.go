@@ -40,7 +40,7 @@ func LoadConfig() (*Config, error) {
 }
 
 func (c *Config) PostgresDSN() string {
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s search_path=%s sslmode=%s",
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s search_path=%s sslmode=%s connect_timeout=2",
 		c.DBHost, c.DBPort, c.DBUser, c.DBPassword, c.DBName, c.DBSchema, c.DBSSLMode)
 }
 

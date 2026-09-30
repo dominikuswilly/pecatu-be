@@ -25,22 +25,25 @@ func main() {
 	// 2. Setup Database
 	db, err := postgres.NewPostgresDB(cfg)
 	if err != nil {
-		log.Fatalf("Database connection failed: %v", err)
+		log.Printf("Warning: Database connection failed: %v (service running in standalone/partial mode)", err)
+	} else {
+		defer db.Close()
 	}
-	defer db.Close()
 
 	// 3. Setup Repository
 	donateRepo := postgres.NewDonateRepository(db)
 
 	// 4. Setup Usecase
 	donateUsecase := usecase.NewDonateUsecase(donateRepo)
+	contributionFeeUsecase := usecase.NewContributionFeeUsecase()
 
 	// 5. Setup Delivery (Handlers)
 	healthHandler := deliveryHttp.NewHealthHandler()
 	donateHandler := deliveryHttp.NewDonateHandler(donateUsecase)
+	contributionFeeHandler := deliveryHttp.NewContributionFeeHandler(contributionFeeUsecase)
 
 	// 6. Setup Router
-	router := deliveryHttp.NewRouter(healthHandler, donateHandler)
+	router := deliveryHttp.NewRouter(healthHandler, donateHandler, contributionFeeHandler)
 
 	// 7. Start Server with Graceful Shutdown
 	srv := &http.Server{

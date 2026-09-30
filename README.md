@@ -51,6 +51,17 @@ The API will be available at `http://localhost:6201`.
 
 - **Get Donate** (Dummy Data)
   ```bash
-  curl -i http://localhost:6201/donate/123
+  curl -i http://localhost:6201/public/donate/123
   ```
-  Returns the mocked entity `{"id": "123", "amount": 10000, "status": "success"}`.
+  Returns the donation details.
+
+- **Get Contribution Fee / Iuran Warga**
+  ```bash
+  curl -i http://localhost:6201/public/contribution-fee
+  # Or with a custom CSV URL:
+  curl -i "http://localhost:6201/public/contribution-fee?url=https://example.com/data.csv"
+  # Alias endpoint:
+  curl -i http://localhost:6201/public/iuran
+  ```
+  Downloads/reads the contribution fee CSV data, parses monthly payments, access card details, and returns structured summary and resident contribution JSON.
+

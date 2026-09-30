@@ -18,6 +18,9 @@ func NewDonateRepository(db *sql.DB) domain.DonateRepository {
 }
 
 func (r *donateRepository) GetByDonateID(ctx context.Context, donateID string) ([]*domain.DonateDetail, error) {
+	if r.db == nil {
+		return nil, fmt.Errorf("database connection not available")
+	}
 	query := `
 		SELECT 
 			c_id, 

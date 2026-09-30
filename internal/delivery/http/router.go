@@ -19,11 +19,17 @@ func enableCORS(next http.Handler) http.Handler {
 	})
 }
 
-func NewRouter(healthHandler *HealthHandler, donateHandler *DonateHandler) http.Handler {
+func NewRouter(
+	healthHandler *HealthHandler,
+	donateHandler *DonateHandler,
+	contributionFeeHandler *ContributionFeeHandler,
+) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", healthHandler.Check)
 	mux.HandleFunc("GET /public/donate/{id}", donateHandler.GetByID)
+	mux.HandleFunc("GET /public/contribution-fee", contributionFeeHandler.GetContributionFees)
+	mux.HandleFunc("GET /public/iuran", contributionFeeHandler.GetContributionFees)
 
 	return enableCORS(mux)
 }
