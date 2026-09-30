@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -47,6 +48,27 @@ func (u *contributionFeeUsecase) GetContributionFees(ctx context.Context, source
 	return data, nil
 }
 
+const defaultGoogleSheetsURL = "https://docs.google.com/spreadsheets/d/1dinqvqrq8g7drc12yM5kpH1e1rv4-XXw/export?format=csv&gid=353831481"
+
+func normalizeSpreadsheetURL(rawURL string) string {
+	rawURL = strings.TrimSpace(rawURL)
+	if strings.Contains(rawURL, "docs.google.com/spreadsheets/d/") && !strings.Contains(rawURL, "export?format=csv") {
+		re := regexp.MustCompile(`docs\.google\.com/spreadsheets/d/([^/?#]+)`)
+		matches := re.FindStringSubmatch(rawURL)
+		if len(matches) > 1 {
+			sheetID := matches[1]
+			gid := "353831481"
+			gidRe := regexp.MustCompile(`gid=([0-9]+)`)
+			gidMatches := gidRe.FindStringSubmatch(rawURL)
+			if len(gidMatches) > 1 {
+				gid = gidMatches[1]
+			}
+			return fmt.Sprintf("https://docs.google.com/spreadsheets/d/%s/export?format=csv&gid=%s", sheetID, gid)
+		}
+	}
+	return rawURL
+}
+
 func (u *contributionFeeUsecase) fetchContent(ctx context.Context, sourceURL string) ([]byte, string, error) {
 	cleanURL := strings.TrimSpace(sourceURL)
 	if cleanURL == "" {
@@ -54,7 +76,12 @@ func (u *contributionFeeUsecase) fetchContent(ctx context.Context, sourceURL str
 		if cleanURL == "" {
 			cleanURL = os.Getenv("IURAN_CSV_URL")
 		}
+		if cleanURL == "" {
+			cleanURL = defaultGoogleSheetsURL
+		}
 	}
+
+	cleanURL = normalizeSpreadsheetURL(cleanURL)
 
 	// If HTTP/HTTPS URL, download it
 	if strings.HasPrefix(cleanURL, "http://") || strings.HasPrefix(cleanURL, "https://") {

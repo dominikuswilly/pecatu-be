@@ -87,3 +87,27 @@ func TestGetContributionFees_HTTPURL(t *testing.T) {
 		t.Errorf("Expected 2 months paid, got %d", data.Residents[0].MonthsPaidCount)
 	}
 }
+
+func TestNormalizeSpreadsheetURL(t *testing.T) {
+	raw := "https://docs.google.com/spreadsheets/d/1dinqvqrq8g7drc12yM5kpH1e1rv4-XXw/edit?gid=353831481#gid=353831481"
+	expected := "https://docs.google.com/spreadsheets/d/1dinqvqrq8g7drc12yM5kpH1e1rv4-XXw/export?format=csv&gid=353831481"
+	got := normalizeSpreadsheetURL(raw)
+	if got != expected {
+		t.Errorf("Expected %s, got %s", expected, got)
+	}
+}
+
+func TestGetContributionFees_RealGoogleSheets(t *testing.T) {
+	sheetWebURL := "https://docs.google.com/spreadsheets/d/1dinqvqrq8g7drc12yM5kpH1e1rv4-XXw/edit?gid=353831481#gid=353831481"
+	uc := NewContributionFeeUsecase()
+	data, err := uc.GetContributionFees(context.Background(), sheetWebURL)
+	if err != nil {
+		t.Fatalf("Failed to fetch real Google Sheets data: %v", err)
+	}
+
+	if data.Summary.TotalResidents == 0 {
+		t.Errorf("Expected residents > 0 from real sheets")
+	}
+	t.Logf("Fetched real sheets data successfully! Residents: %d, Collected: Rp %.0f, Source: %s",
+		data.Summary.TotalResidents, data.Summary.TotalCollected, data.Source)
+}
